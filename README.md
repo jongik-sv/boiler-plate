@@ -1,6 +1,8 @@
 # boiler-plate
 
-#20강
+참고 : [강사 소스](https://github.com/jaewonhimnae/boiler-plate-ko)
+
+##20강
 
 [react-router](https://reactrouter.com/web/guides/quick-start) 참고
 
