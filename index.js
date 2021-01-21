@@ -32,7 +32,8 @@ app.post('/register', (req, res) => {
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
-})
+});
+
 
 // mongodb+srv://jji:<password>@boiler.dwcw2.mongodb.net/<dbname>?retryWrites=true&w=majority 
 // ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOn1Jz2XsWZyAz8weucZVUoxjS7mLelQsxr4qSWFmHTV yoo7032@gmail.com
