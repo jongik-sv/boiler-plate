@@ -1,5 +1,7 @@
 # Getting Started with Create React App
 
+## webpack은 src 디렉토리 안의 파일만 관리 해준다.
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
