@@ -3,17 +3,16 @@ const mongoose = require("mongoose");
 const app = express();
 const port = 5000;
 const { User } = require("./models/User");
-const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const config = require("./config/key");
 const { auth } = require("./middleware/auth");
 
+const bodyParser = require("body-parser");
 // application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
 
 //application/json
 app.use(bodyParser.json());
-
 app.use(cookieParser());
 
 mongoose
@@ -23,11 +22,15 @@ mongoose
     useCreateIndex: true,
     useFindAndModify: false,
   })
-  .then(() => console.log("MongoDB connected..."))
+  .then(() => console.log("MongoDB Connected..."))
   .catch((err) => console.log(err));
 
 app.get("/", (req, res) => {
   res.send("Hello World! 꺼져");
+});
+
+app.get("/api/hello", (req, res) => {
+  res.send("하이");
 });
 
 app.post("/api/users/register", (req, res) => {
@@ -101,12 +104,6 @@ app.get("/api/users/logout", auth, (req, res) => {
     return res.status(200).send({ success: true });
   });
 });
-
-
-app.get('/api/hello', (req, res) => {
-  res.send('g하이');
-});
-
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);

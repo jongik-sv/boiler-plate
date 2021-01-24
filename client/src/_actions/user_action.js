@@ -1,6 +1,5 @@
 import axios from "axios";
 import { LOGIN_USER, REGISTER_USER, AUTH_USER } from "./types";
-
 export function loginUser(dataToSubmit) {
   const request = axios
     .post("/api/users/login", dataToSubmit)
@@ -25,7 +24,7 @@ export function registerUser(dataToSubmit) {
 
 export function auth() {
   const request = axios
-    .post("/api/users/auth")
+    .get("/api/users/auth")
     .then((response) => response.data);
 
   return {
