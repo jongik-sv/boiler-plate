@@ -183,11 +183,10 @@ app.post("/api/users/register", (req, res) => {
 
 ### postman [[다운로드]](https://www.postman.com/downloads/)
 
-![Screenshot](resources/노드 리액트 기초 강의 #7 BodyParser & PostMan & 회원 가입 기능.png)
+회원가입전송
+![Screenshot](https://github.com/jongik-sv/boiler-plate/blob/main/resources/%EB%85%B8%EB%93%9C%20%EB%A6%AC%EC%95%A1%ED%8A%B8%20%EA%B8%B0%EC%B4%88%20%EA%B0%95%EC%9D%98%20%237%20BodyParser%20&%20PostMan%20&%20%20%ED%9A%8C%EC%9B%90%20%EA%B0%80%EC%9E%85%20%EA%B8%B0%EB%8A%A5.png?raw=true)
 
-document/images/노드 리액트 기초 강의 #7 BodyParser & PostMan & 회원 가입 기능.png)
-
-[![Cors image](https://mdn.mozillademos.org/files/14295/CORS_principle.png)](https://developer.mozilla.org/ko/docs/Web/HTTP/CORS)
+)
 
 ## 8강
 
