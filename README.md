@@ -1,6 +1,6 @@
 # boiler-plate
 
-참고 : [강사 소스](https://github.com/jaewonhimnae/boiler-plate-ko)
+참고 : [강사님 소스](https://github.com/jaewonhimnae/boiler-plate-ko)
 
 ## 2강 Node JS, Express 다운로드 하기
 
@@ -10,7 +10,7 @@ node js 설치
 
 express 설치
 
-```sh
+```s님
 npm install express --save
 ```
 
@@ -195,6 +195,189 @@ npm install nodemon --save-dev
 
 ## 9강 비밀 설정 정보 관련관리
 
+1. config 폴더생성
+2. dev.js, prod.js, key.js 생성
+3. dev.js에는 몽고디비 연결 주소를 넣고, prod.js에는 아래처럼 기록
+   --> 이유는 로컬 실행환경과 배포이후의 실행환경을 분리함.
+
+```js
+module.exports = {
+  mongoURI: process.env.MONGO_URI,
+};
+```
+
+> 배포이후는 [heroku](https://www.heroku.com/home) 사이트에서 관리 하도록 만듦 4. key.js 코딩
+
+```js
+if (process.env.NODE_ENV === "production") {
+  module.exports = require("./prod");
+} else {
+  module.exports = require("./dev");
+}
+```
+
+5. index.js config.mongoURI 부분 수정
+
+```js
+mongoose
+  .connect(config.mongoURI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+    useFindAndModify: false,
+  })
+  .then(() => console.log("MongoDB Connected..."))
+  .catch((err) => console.log(err));
+```
+
+6. .gitignore에 dev.js를 등록하여 github에 올라가지 않도록 조치
+
+## 10강 Bcrypt로 비밀번호 암호화 하기
+
+[bcrypt](https://github.com/kelektiv/node.bcrypt.js#readme) 설치
+
+```sh
+npm install bcrypt --save
+```
+
+아래와 같이 코딩
+
+```js
+useSchema.pre("save", function (next) {
+  // 여기에 처리할 내용을 코딩
+  다;
+  next();
+});
+```
+
+위 코드는 mongodb에 저장하기 전에 전처리, 다 끝나면 next() 실행(여기서는 `index.js`의 `user.save()`)한다.(일종의 AOP??, 프록시 패턴??)
+
+최종 코드
+
+```js
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
+
+...
+
+userSchema.pre("save", function (next) {
+  // this는 userSchema를 가르킨다.
+  let user = this;
+
+  if (user.isModified("password")) {
+    // 비밀 번호를 바꿀때만 암호화한다.
+    bcrypt.genSalt(saltRounds, function (err, salt) {
+      if (err) return next(err);
+
+      bcrypt.hash(user.password, salt, function (err, hash) {
+        if (err) return next(err);
+        user.password = hash;
+        next();
+      });
+    });
+  } else {
+    next();
+  }
+});
+
+```
+
+## 11강, 12강 로그인 기능 with Bcrypt, jsonwebtoken
+
+기능 정리
+
+1. 데이터베이스에서 요청한 e-mail 찾기
+2. e-mail이 있으면 비밀번호가 같은지 확인
+3. 비밀번호가 같은면 토큰 생성
+
+### [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken#readme) 설치
+
+```sh
+npm install jsonwebtoken --save
+```
+
+### [cookie-parser](https://github.com/expressjs/cookie-parser) 설치
+
+```sh
+npm isntall cookie-parser --save
+```
+
+### 최종 코드
+
+index.js
+
+```js
+const cookieParser = require("cookie-parser");
+
+...
+
+app.use(cookieParser());
+
+...
+
+app.post("/api/users/login", (req, res) => {
+  // 요쳥된 email을 데이터베이스에서 찾는다.
+  User.findOne({ email: req.body.email }, (err, user) => {
+    if (!user) {
+      return res.json({
+        loginSucess: false,
+        message: "해당유저가 없습니다.",
+      });
+    }
+
+    // 비밀번호가 같은지 확인한다.
+    user.comparePassword(req.body.password, (err, isMatch) => {
+      if (!isMatch) {
+        return res.json({
+          loginSucess: false,
+          message: "비밀번호가 틀렸습니다.",
+        });
+      }
+
+      // 비밀번호가 맞으면 토큰을 생성한다.
+      user.generateToken((err, user) => {
+        if (err) return res.status(400).send(err);
+
+        // 토큰을 저장한다. where?? 쿠키, 로컬 스토리지, 세션
+        // 여기서는 쿠키에 저장한다. cookieParser
+        res
+          .cookie("x_auth", user.token)
+          .status(200)
+          .json({ loginSucess: true, userId: user._id });
+      });
+    });
+  });
+});
+```
+
+User.js
+
+```js
+const jwt = require("jsonwebtoken");
+
+...
+
+
+userSchema.methods.comparePassword = function (plainPassword, callback) {
+  // plainPassword 를 암호화된 비밀 번호와 비교한다.
+  bcrypt.compare(plainPassword, this.password, function (err, isMatch) {
+    if (err) return callback(err);
+    callback(null, isMatch);
+  });
+};
+
+userSchema.methods.generateToken = function (callback) {
+  let user = this;
+  // jsonwebtoken을 사용해서 토큰 생성
+  let token = jwt.sign(user._id.toHexString(), "secretToken"); // user._id + 'secretToken' ==> token
+  user.token = token;
+  user.save(function (err, user) {
+    if (err) return callback(err);
+    callback(null, user);
+  });
+};
+```
+
 ## 20강
 
 [react-router](https://reactrouter.com/web/guides/quick-start) 참고
@@ -341,7 +524,7 @@ Redux가 없을 경우는 state 변경을 위해 복잡한 데이터 전달 과�
   - 커다란 JSON으로 생각하면 됨
   - 규모가 클 경우 카테고리로 나누어 분류 하는 것이 일반적
 
-```json
+```js
 {
     // 세션과 관련된 것
     session: {
