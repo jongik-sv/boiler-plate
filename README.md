@@ -184,15 +184,16 @@ app.post("/api/users/register", (req, res) => {
 ### postman [[다운로드]](https://www.postman.com/downloads/)
 
 회원가입전송
-![Screenshot](https://github.com/jongik-sv/boiler-plate/blob/main/resources/%EB%85%B8%EB%93%9C%20%EB%A6%AC%EC%95%A1%ED%8A%B8%20%EA%B8%B0%EC%B4%88%20%EA%B0%95%EC%9D%98%20%237%20BodyParser%20&%20PostMan%20&%20%20%ED%9A%8C%EC%9B%90%20%EA%B0%80%EC%9E%85%20%EA%B8%B0%EB%8A%A5.png?raw=true)
 
-)
+![Screenshot](docs/ch7.register.png)
 
-## 8강
+## 8강 Nodemon 설치
 
-딩
+```sh
+npm install nodemon --save-dev
+```
 
-## 9강
+## 9강 비밀 설정 정보 관련관리
 
 ## 20강
 
