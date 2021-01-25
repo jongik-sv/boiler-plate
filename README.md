@@ -710,6 +710,11 @@ Redux가 없을 경우는 state 변경을 위해 복잡한 데이터 전달 과�
 }
 ```
 
+[리액트 & 리덕스 잘 나와 있는 싸이트](https://react.vlpt.us/)
+
+[아르곤 UI Firebase & Redux](https://www.youtube.com/watch?v=BMPHfnAA9iI&list=PLWxSJr7LCl87rxd7A4j9WEFUbJz4gTNLa)
+
+
 ## 27강 Redux up
 
 설치
@@ -997,3 +1002,47 @@ export default LoginPage;
 
 
 ## 31강 회원가입 페이지
+로그인 페이지와 거의 유사 
+
+
+## 32강 로그아웃
+1) LandingPage에서 버튼 
+1) 버튼에 onClick 이벤트, onClickHandler 생성
+1) 간단해서 Redux 쓰지 않고 바로 Axios 호출
+1) logout 후 login 페이지로 이동
+
+LandingPage.js
+```js
+  // 간단해서 Redux없이 함
+  const onClickHandler = () => {
+    axios.get(`/api/users/logout`).then((response) => {
+      if (response.data.success) {
+        props.history.push("/login");
+      } else {
+        alert("로그아웃 하는데 실패 했습니다.");
+      }
+    });
+  };
+```
+## 33, 34강 인증체크
+
+### 진입가능한 페이지
+1) 아무나 진입가능한 페이지
+    * LandingPage
+    * AboutPage
+1) 로그인  회원만 진입 가능한 페이지
+    * DetailPage
+1) 로그인 한 회원은 진입 못하는 페이지
+    * RegisterPage
+    * LoginPage
+1) 관리자만 진입 가능한 페이지
+    * AdminPage
+
+### HOC (Higher Order Component)
+컴포넌트를 받은 후 새로운 컴포넌트를 리턴하는 함수
+```js
+const EnhancedComponent = higherOrderComponent(WrappedComponent);
+```
+데코 pattern 과 유사하게 처리
+
+최종 소스 참고

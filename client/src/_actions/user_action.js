@@ -27,6 +27,7 @@ export function registerUser(dataToSubmit) {
 }
 
 export function auth() {
+  // get 메소드라서 body 부분이 필요없다.
   const request = axios
     .get("/api/users/auth")
     .then((response) => response.data);
