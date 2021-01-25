@@ -378,11 +378,165 @@ userSchema.methods.generateToken = function (callback) {
 };
 ```
 
-## 20강
+
+## 13강 Auth 기능 만들기
+
+### 왜 필요한가?
+> 1. 페이지 이동 때마다 로그인 되어 있는지, 관리자 유저인지 체크
+> 2. 행위가 있을때 권한이 있는지 체크
+
+### 처리방법
+클라이언트(쿠키)와 서버(mongodb 유저 DB)의 토큰을 서로 비교한다.
+1. 클라이언트 쿠키의 토큰 
+2. JWT로 토큰 디코드 (결과 user id가 나옴) 
+3. user id로 서버(mongodb) 서버 검색하여 토큰이 있는지, 같은지 확인
+4. 확인 결과에 따른 처리
+
+### 인증처리
+라우터의 주소 변경(Router로 여러 단위로 나누어 관리 효율을 높임)
+> /api/users/login, /api/users/register 
+
+middleware/auth.js 생성
+
+인증 처리를 위하여 아래와 같이 소스를 작성한다.
+```js
+const { User } = require("../models/User");
+
+let auth = (req, res, next) => {
+  // 인증 처리
+  // 클라이언트 쿠키에서 토큰을 가져온다.
+  let token = req.cookies.x_auth;
+
+  // 토큰을 복호화 한 후 유저를 찾는다.
+  User.findByToken(token, (err, user) => {
+    // 유저가 있으면 인증 OK
+    // 없으면 인증 NOK
+    if (err) throw err;
+    if (!user) return res.json({ isAuth: false, error: true });
+
+    // 다음 실행될 콜백 함수에서 사용될 request 정보 편집
+    req.token = token;
+    req.user = user;
+
+    next();
+  });
+};
+
+module.exports = { auth };
+```
+Users.js
+```js
+...
+userSchema.statics.findByToken = function (token, callback) {
+  let user = this;
+  // 토큰을 decode 한도
+  jwt.verify(token, "secretToken", function (err, decoded) {
+    // 유저 아이디를 이용해서 유저를 찾은 다음에
+    // 클라이언트에서 가져온 token과 DB에 보관된 토큰이 일치하는지 확인
+
+    user.findOne({ _id: decoded, token: token }, function (err, user) {
+      if (err) return callback(err);
+      callback(null, user);
+    });
+  });
+};
+```
+
+index.js
+```js
+const { auth } = require("./middleware/auth");
+
+...
+
+// auth를 먼저 실행하고 콜백을 실행한다.
+app.get("/api/users/auth", auth, (req, res) => {
+  // 여기까지 미들웨어를 통과해 왔다는 것은 authentication이 true
+  res.status(200).json({
+    _id: req.user._id,
+    isAdmin: req.user.role === 0 ? false : true,
+    isAuth: ture,
+    email: req.user.email,
+    name: req.user.name,
+    lastName: req.user.lastName,
+    role: req.user.role,
+    image: req.user.image,
+  });
+});
+
+```
+## 14 로그아웃 기능
+1. 로그아웃 유저를 데이터베이스에서 찾음
+2. 해당 유저의 토큰을 지움
+
+index.js
+```js
+app.get("/api/users/logout", auth, (req, res) => {
+  // 토큰을 지워준다.
+  User.findOneAndUpdate({ _id: req.user }, { token: "" }, (err, user) => {
+    if (err) return res.json({ success: false, err });
+    return res.status(200).send({ success: true });
+  });
+});
+```
+
+## 15 리액트란
+1. 리액트는 facebook에서 만든 라이브러리이다.
+2. 컴퍼넌트로 되어 있어서 재사용성이 좋다.
+3. Virtual DOM(Real DOM을 가볍게 복사)
+    - 데이터가 바뀌면 바뀐부분만 랜더링한다.
+
+## 16 Create-React-App
+1. Babel : 최신 자바 스크립트 문법을 구형 브라우저에서 실행 가능하게 변환 시켜줌
+2. Webpack : 여러 모듈을 번들하여 배포판을 만든다.
+    * `src 디렉토리만 웹팩으로 관리한다. public 폴더는 제외됨`
+
+
+
+### 폴더 정리
+1. server, client 폴더 생성
+2. 지금까지 한 내용을 server 폴더로 이동
+
+
+### Create-React-App
+
+client 디렉토리에서 create-react-app 실행
+
+```sh
+npx create-react-app .
+```
+실행 실패 시 c컴파일러 설정이 필요함
+
+
+## 17 npm, npx
+* npm : 디펜던시 관리 (-g 옵션은 프로젝트 디렉토리가 아닌 컴퓨터에 다운로드)
+* npx : npm global 옵션 설치 없이 1회용으로 최신 버전을 사용할 수 있다.
+
+## 18 구조설명
+...
+
+## 19 CRA to Our Boilerplate
+
+###  구조설명
+* _action, _reducer : Redux를 위한 폴더
+* components/views : page
+* components/views/Sections : 해당 페이지 관련된 css, component
+* App.js : Routing
+* Config : 환경 변수
+* hoc(Higher Order Component) : 다른 컴포넌트를 가지고 있는 Function
+* utils : 공통으로 사용되는 모듈
+
+해당 구조로 디렉토리 생성하고 view의 각 페이지 생성 (rfce사용 ; ES7 extension)
+
+## 20강 React Router Dom
 
 [react-router](https://reactrouter.com/web/guides/quick-start) 참고
 
 [basic](https://reactrouter.com/web/example/basic) 참고
+
+설치
+```bash
+npm install react-router-dom --save
+```
 
 ```jsx
 <Route exact path="/">
@@ -401,7 +555,9 @@ userSchema.methods.generateToken = function (callback) {
 - [app.use](https://github.com/xzcv1994/My-Study/issues/15)
 - 미들웨어 [[1]](https://psyhm.tistory.com/8), [[2]](https://jinbroing.tistory.com/126)
 
-## 21강
+각 페이지 생성하자.
+
+## 21강 데이터 Flow & Axios
 
 ### AXIOS
 
@@ -414,7 +570,11 @@ userSchema.methods.generateToken = function (callback) {
 npm install axios --save
 ```
 
-## 22강
+### 참고
+[useEffect](https://ko.reactjs.org/docs/hooks-effect.html)
+
+
+## 22강 CORS 이슈, Proxy설정
 
 ### Cors(Cross-Origin Resource Sharing)가 무엇인가?
 
@@ -445,8 +605,9 @@ module.exports = function(app) {
     })
   );
 ```
+## 23강 Proxy server
 
-## 24강
+## 24강Concurrently 
 
 ### Concurrently 설치
 
@@ -470,7 +631,7 @@ root의 package.json 파일에서 스크립트 부분 편집
 
 이제 루트에서 `npm run dev` 만 실행하면 서버, 클라이언트 모두 실행 된다.
 
-## 25강
+## 25강 Antd CSS Framwork
 
 React JS를 위한 CSS Framework 종류
 
@@ -490,7 +651,7 @@ npm install antd --save
 
 ```
 
-## 26강
+## 26강 Redux 기초
 
 ### `props`
 

@@ -4,6 +4,8 @@ import { withRouter } from "react-router-dom";
 
 function LandingPage(props) {
   useEffect(() => {
+    // LandingPage에 들어오자 마자 실행한다. 
+    // class의 constructor의 역할인듯...
     axios.get("/api/hello").then((response) => console.log(response.data));
   }, []);
 

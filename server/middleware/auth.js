@@ -12,6 +12,7 @@ let auth = (req, res, next) => {
     if (err) throw err;
     if (!user) return res.json({ isAuth: false, error: true });
 
+    // 다음 실행될 콜백 함수에서 사용될 request 정보 편집
     req.token = token;
     req.user = user;
 

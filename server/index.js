@@ -84,6 +84,7 @@ app.post("/api/users/login", (req, res) => {
 // role 1 어드민 role 2 특정 부서 어드민
 // role 0 일반 유저 role 0 아니면 관리자
 
+// auth를 먼저 실행하고 콜백을 실행한다.
 app.get("/api/users/auth", auth, (req, res) => {
   // 여기까지 미들웨어를 통과해 왔다는 것은 authentication이 true
   res.status(200).json({
@@ -99,6 +100,7 @@ app.get("/api/users/auth", auth, (req, res) => {
 });
 
 app.get("/api/users/logout", auth, (req, res) => {
+  // 토큰을 지워준다.
   User.findOneAndUpdate({ _id: req.user }, { token: "" }, (err, user) => {
     if (err) return res.json({ success: false, err });
     return res.status(200).send({ success: true });
