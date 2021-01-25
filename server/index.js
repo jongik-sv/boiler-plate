@@ -90,7 +90,7 @@ app.get("/api/users/auth", auth, (req, res) => {
   res.status(200).json({
     _id: req.user._id,
     isAdmin: req.user.role === 0 ? false : true,
-    isAuth: ture,
+    isAuth: true,
     email: req.user.email,
     name: req.user.name,
     lastName: req.user.lastName,

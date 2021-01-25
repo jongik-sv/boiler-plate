@@ -726,8 +726,274 @@ Action은 객체 형식이어야 한다. 그런데 promise, function을 받기 �
 
 > redux-promise : promise가 왔을때 어떻게 대처하는지 알려줌
 
-## 29강 로그인 페이지 #1
+### 코딩
+
+ _reducers/index.js
+```js
+import { combineReducers } from 'redux';
+import user from './user_reducer';
+
+// 여러 reducer를 combineReducers를 통해 rootReducer로 합쳐주는 역할
+const rootReducer = combineReducers({
+    user
+});
+
+export default rootReducer;
+```
+_reducers/user_reducer.js
+```js
+import { LOGIN_USER, REGISTER_USER, AUTH_USER } from "../_actions/types";
+
+const UserReducer = function (state = {}, action) {
+  // 아래는 나중에 사용
+  // switch (action.type) {
+  //   case LOGIN_USER:
+  //     return { ...state, loginSuccess: action.payload };
+  //   case REGISTER_USER:
+  //     return { ...state, register: action.payload };
+  //   case AUTH_USER:
+  //     return { ...state, userData: action.payload };
+  //   default:
+  //     return state;
+  // }
+};
+
+export default UserReducer;
+
+```
+
+
+index.js
+redux devtool 사용을 위해 플러그 인 도 입력
+
+
+      window.__REDUX_DEVTOOLS_EXTENSION__ &&
+      window.__REDUX_DEVTOOLS_EXTENSION__()
+
+그 후 크롬 확장 프로그램에서 redux devtool 설치
+
+
+   
+```js
+import React from "react";
+import ReactDOM from "react-dom";
+// import './index.css';
+import App from "./App";
+import * as serviceWorker from "./serviceWorker";
+import { Provider } from "react-redux";
+import "antd/dist/antd.css";
+import { applyMiddleware, createStore } from "redux";
+import promiseMiddleware from "redux-promise";
+import ReduxThunk from "redux-thunk";
+import Reducer from "./_reducers"; 
+
+const createStoreWithMiddleware = applyMiddleware(
+  promiseMiddleware,
+  ReduxThunk
+)(createStore);
+
+ReactDOM.render(
+  <Provider
+    store={createStoreWithMiddleware(
+      Reducer,
+      window.__REDUX_DEVTOOLS_EXTENSION__ &&
+        window.__REDUX_DEVTOOLS_EXTENSION__()
+    )}
+  >
+    <App />
+  </Provider>,
+  document.getElementById("root")
+);
+
+// If you want your app to work offline and load faster, you can change
+// unregister() to register() below. Note this comes with some pitfalls.
+// Learn more about service workers: https://bit.ly/CRA-PWA
+serviceWorker.unregister();
+
+```
+
+## 28강 [React Hooks](https://ko.reactjs.org/docs/hooks-overview.html)
+
+|`Class Component`| `Functional Component`|
+|:---|:---|
+|기능이 많음|기능이 적음|
+|코드가 김|코드가 짧음|
+|복잡한 코드|심플한 코드|
+|실행속도 빠름|실행 속도 느림|
+|||
+
+----
+[![docs/ch28.react-life-cycle-mothod-diagram.png](docs/ch28.react-life-cycle-mothod-diagram.png)](https://projects.wojtekmaj.pl/react-lifecycle-methods-diagram/)
+
+
+> React 16.8 부터 Hook을 사용할 수 있게 됨
+
+> class에서 제공하는 `componentDidMount`, `componentDidUpdate`, `componentWillUnmount의` 기능을 함수형 컴포넌트에서도 사용 가능해진다.
+
+class와 hook을 사용한 function 비교
+![docs/ch28.비교.png](docs/ch28.비교.png)
+
+
+## 29, 30강 로그인 페이지 
 
 Formik, Yup 라이브러리를 사용해서 다이나믹 기능을 넣으면 좋음
 
 여기에는 빠져 있음, 나중에 업그레이드 해보자~
+
+`_actions/users_acton.js` 생성 후 코딩
+
+```js
+// 최종본이 반영 되어 있음
+// 여기서는 loginUser() 부분만 필요
+import axios from "axios";
+import { LOGIN_USER, REGISTER_USER, AUTH_USER } from "./types";
+export function loginUser(dataToSubmit) {
+  // 서버로 request를 날려서 받은 response에서 data를 가져와서 
+  // request에 넣는다.
+  const request = axios
+    .post("/api/users/login", dataToSubmit)
+    .then((response) => response.data);
+
+  // Action은 type, reponse가 필요
+  return {
+    // LOGIN_USER를 위해 ./types를 정의
+    type: LOGIN_USER,
+    payload: request,
+  };
+}
+
+export function registerUser(dataToSubmit) {
+  const request = axios
+    .post("/api/users/register", dataToSubmit)
+    .then((response) => response.data);
+
+  return {
+    type: REGISTER_USER,
+    payload: request,
+  };
+}
+
+export function auth() {
+  const request = axios
+    .get("/api/users/auth")
+    .then((response) => response.data);
+
+  return {
+    type: AUTH_USER,
+    payload: request,
+  };
+}
+
+
+```
+
+
+_reducers/user_reducer.js
+```js
+// 최종본이 반영되어 있음
+// 여기서는 LOGIN_USER만 반영
+import { LOGIN_USER, REGISTER_USER, AUTH_USER } from "../_actions/types";
+
+const UserReducer = function (state = {}, action) {
+  switch (action.type) {
+    case LOGIN_USER:
+      // (previousState, action) => nextState
+      // 이전 State와 action object를 받은 후 next state를 return 한다
+      return { ...state, loginSuccess: action.payload };
+    case REGISTER_USER:
+      return { ...state, register: action.payload };
+    case AUTH_USER:
+      return { ...state, userData: action.payload };
+    default:
+      return state;
+  }
+};
+
+export default UserReducer;
+
+```
+
+_actions/types.js
+```js
+// 최종본이 반영되어 있음
+// 여기서는 LOGIN_USER만 반영
+export const LOGIN_USER = "login_user";
+export const REGISTER_USER = "register_user";
+export const AUTH_USER = "auth_user";
+
+```
+
+LoginPage.js
+```js
+
+import React, { useState } from "react";
+// import Axios from 'axios';
+import { useDispatch } from "react-redux";
+import { loginUser } from "../../../_actions/user_action";
+
+function LoginPage(props) {
+  const dispatch = useDispatch();
+  const [Email, setEmail] = useState("");
+  const [Password, setPassword] = useState("");
+
+  // key 입력의 핸들러
+  const onEmailHandler = (event) => {
+    setEmail(event.currentTarget.value);
+  };
+  const onPasswordHandler = (event) => {
+    setPassword(event.currentTarget.value);
+  };
+
+  const onSubmitHandler = (event) => {
+    // 페이지가 리로딩 되는 것을 막음
+    event.preventDefault();
+
+    console.log(Email, Password);
+
+    let body = {
+      email: Email,
+      password: Password,
+    };
+
+    // loginUser는 _actions/user_action.js 에 정의
+    dispatch(loginUser(body)).then((response) => {
+      if (response.payload.loginSucess) {
+        props.history.push("/");
+      } else {
+        alert("Error");
+      }
+    });
+  };
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        width: "100%",
+        height: "100vh",
+      }}
+    >
+      <form
+        style={{ display: "flex", flexDirection: "column" }}
+        onSubmit={onSubmitHandler}
+      >
+        <label>Email</label>
+        <input type="email" value={Email} onChange={onEmailHandler} />
+        <label>Password</label>
+        <input type="password" value={Password} onChange={onPasswordHandler} />
+
+        <br />
+        <button type="submit">Login</button>
+      </form>
+    </div>
+  );
+}
+
+export default LoginPage;
+
+```
+
+
+## 31강 회원가입 페이지

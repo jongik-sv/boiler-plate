@@ -1,10 +1,14 @@
 import axios from "axios";
 import { LOGIN_USER, REGISTER_USER, AUTH_USER } from "./types";
 export function loginUser(dataToSubmit) {
+
+  // 서버로 request를 날려서 받은 response에서 data를 가져와서 
+  // request에 넣는다.
   const request = axios
     .post("/api/users/login", dataToSubmit)
     .then((response) => response.data);
 
+  // Action은 type, reponse가 필요
   return {
     type: LOGIN_USER,
     payload: request,

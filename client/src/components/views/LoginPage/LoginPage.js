@@ -18,6 +18,7 @@ function LoginPage(props) {
   };
 
   const onSubmitHandler = (event) => {
+    // 페이지가 리로딩 되는 것을 막음
     event.preventDefault();
 
     console.log(Email, Password);
@@ -27,6 +28,7 @@ function LoginPage(props) {
       password: Password,
     };
 
+    // loginUser는 _actions/user_action.js 에 정의
     dispatch(loginUser(body)).then((response) => {
       if (response.payload.loginSucess) {
         props.history.push("/");
