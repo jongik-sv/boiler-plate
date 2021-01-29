@@ -196,8 +196,8 @@ npm install nodemon --save-dev
 ## 9강 비밀 설정 정보 관련관리
 
 1. config 폴더생성
-2. dev.js, prod.js, key.js 생성
-3. dev.js에는 몽고디비 연결 주소를 넣고, prod.js에는 아래처럼 기록
+1. dev.js, prod.js, key.js 생성
+1. dev.js에는 몽고디비 연결 주소를 넣고, prod.js에는 아래처럼 기록
    --> 이유는 로컬 실행환경과 배포이후의 실행환경을 분리함.
 
 ```js
@@ -206,7 +206,8 @@ module.exports = {
 };
 ```
 
-> 배포이후는 [heroku](https://www.heroku.com/home) 사이트에서 관리 하도록 만듦 4. key.js 코딩
+> 배포이후는 [heroku](https://www.heroku.com/home) 사이트에서 관리 하도록 만듦 
+4. key.js 코딩
 
 ```js
 if (process.env.NODE_ENV === "production") {
@@ -672,7 +673,15 @@ state를 체계적으로 관리하는 도구
 Redux가 없을 경우는 state 변경을 위해 복잡한 데이터 전달 과정이 필요하지만, Redux가 있으면 Store에 의해 간단하게 처리 된다.
 한 방향으로만 데이터가 흐른다.
 
+아래 그림은 class를 사용한 redux이다.
+function redux와 개념은 똑같다.
+
 [![플로우 전체도](https://miro.medium.com/max/700/0*Z18iLsM7Bf1xoNth.)](https://medium.com/@ca3rot/%EC%95%84%EB%A7%88-%EC%9D%B4%EA%B2%8C-%EC%A0%9C%EC%9D%BC-%EC%9D%B4%ED%95%B4%ED%95%98%EA%B8%B0-%EC%89%AC%EC%9A%B8%EA%B1%B8%EC%9A%94-react-redux-%ED%94%8C%EB%A1%9C%EC%9A%B0%EC%9D%98-%EC%9D%B4%ED%95%B4-1585e911a0a6)
+
+> 참고 : [react-redux의 hook을 사용하기](https://medium.com/@trustyoo86/react-redux%EC%9D%98-hooks%EB%A5%BC-%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0-78f9b8aaa365)
+
+>  참고 : [Redux 적용하기 (함수형, Class 형)](https://velog.io/@eomttt/Redux-%EC%A0%81%EC%9A%A9%ED%95%98%EA%B8%B0-%ED%95%A8%EC%88%98%ED%98%95-Class-%ED%98%95)
+
 
 #### 구조 (참고 : [[1]](https://medium.com/@ca3rot/%EC%95%84%EB%A7%88-%EC%9D%B4%EA%B2%8C-%EC%A0%9C%EC%9D%BC-%EC%9D%B4%ED%95%B4%ED%95%98%EA%B8%B0-%EC%89%AC%EC%9A%B8%EA%B1%B8%EC%9A%94-react-redux-%ED%94%8C%EB%A1%9C%EC%9A%B0%EC%9D%98-%EC%9D%B4%ED%95%B4-1585e911a0a6))
 
